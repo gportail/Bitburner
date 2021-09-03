@@ -29,6 +29,6 @@ export async function main(ns) {
 		} else {
 			await ns.hack(target,{ threads: script.thread });
 		}
-		await ns.sleep(3000);
+		ns.sleep(3000);
 	}
 }

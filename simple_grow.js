@@ -29,7 +29,7 @@ export async function main(ns) {
 		} else {
 			return
 		}
-		await ns.sleep(3000);
+		ns.sleep(3000);
 	}
 
 }

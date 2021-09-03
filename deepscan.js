@@ -33,7 +33,7 @@ export function deepscan(fromServer, ns) {
 	for (var i = 0; i < targets.length; i++) {
 		var target = targets[i];
 		readServer(target, ns);
-		await ns.sleep(1000);
+		ns.sleep(1000);
 	}
 	return servers;
 }

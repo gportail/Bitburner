@@ -47,6 +47,6 @@ export async function main(ns) {
 				}
 			}
 		}
-		await ns.sleep(3000);
+		ns.sleep(3000);
 	}
 }

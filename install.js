@@ -44,7 +44,7 @@ export function install(ns, onServer, fromServer) {
 					// si on a le niveau necessaire on installe
 					if (hl <= ns.getHackingLevel()) {
 						install(ns, target, onServer);
-						await await ns.sleep(3000);
+						await ns.sleep(3000);
 					}
 				}
 			}
@@ -63,7 +63,7 @@ export async function main(ns) {
 		var target = targets[i];
 
 		install(ns, target, ns.getHostname());
-		await ns.sleep(3000);
+		ns.sleep(3000);
 	}
 	ns.tprint(servers);
 }
