@@ -1,7 +1,9 @@
 import {deepscan} from "deepscan.js";
 
 export async function main(ns) {
-	var servers = deepscan(ns.getHostname(), ns);
+	// var servers = deepscan(ns.getHostname(), ns);
+	var host = ns.getHostname();
+	var servers = deepscan(host, ns);
 
 	servers.sort(function(a, b) {
 		if (a.hackLvl < b.hackLvl) return -1;
