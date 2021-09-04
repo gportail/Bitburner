@@ -35,6 +35,29 @@ export function deepscan(fromServer, ns) {
 		readServer(target, ns);
 		ns.sleep(1000);
 	}
+   
+	servers.SortByMaxMoney = function() {
+		this.sort(function(a, b) {
+			if (a.maxMoney < b.maxMoney) return -1;
+			if (a.maxMoney > b.maxMoney) return 1;
+			return 0;
+		})
+	};
+	servers.SortByHackLevel = function() {
+		this.sort(function(a, b) {
+			if (a.hackLvl < b.hackLvl) return -1;
+			if (a.hackLvl > b.hackLvl) return 1;
+			return 0;
+		})
+	};
+	servers.SortByMaxRam = function() {
+		this.sort(function(a, b) {
+			if (a.maxRam < b.maxRam) return -1;
+			if (a.maxRam > b.maxRam) return 1;
+			return 0;
+		})
+	};
+
 	return servers;
 }
 

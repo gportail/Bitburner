@@ -5,23 +5,35 @@ export async function main(ns) {
 	var host = ns.getHostname();
 	var servers = deepscan(host, ns);
 
-   /**
-   * Sort by hackLvl 
-   */
-	/*
-	servers.sort(function(a, b) {
-		if (a.hackLvl < b.hackLvl) return -1;
-		if (a.hackLvl > b.hackLvl) return 1;
-		return 0;
-	});*/
-   /**
-   * Sort by maxMoney
-   */
-	servers.sort(function(a, b) {
-		if (a.maxMoney < b.maxMoney) return -1;
-		if (a.maxMoney > b.maxMoney) return 1;
-		return 0;
-	});
+	var sort = ns.args[0];
+	if (sort == undefined) {
+		sort = "hackLvl";
+	}
+	ns.tprint("Sort by " + sort);
+
+	switch (sort) {
+		case "hackLvl":
+			/**
+			 * Sort by hackLvl 
+			 */
+			ns.tprint("Sorting by " + sort);
+			servers.SortByHackLevel();
+			break;
+		case "maxMoney":
+			/**
+			 * Sort by maxMoney
+			 */
+			ns.tprint("Sorting by " + sort);
+			servers.SortByMaxMoney();
+			break;
+		case "maxRam":
+			/**
+			 * Sort by maxRam
+			 */
+			ns.tprint("Sorting by " + sort);
+			servers.SortByMaxRam();
+			break;
+	}
 
 	//ns.tprint("servers.length = " + servers.length);
 	var padChr = '=';
