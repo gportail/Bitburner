@@ -21,6 +21,12 @@ export default class classServer {
 	scan() { return ns.scan(this.hostname); }
 	pctMoney() { return this.money / this.maxMoney; }
 
+	get isHackable() {
+		return (this.securityLvl <= this.minSecurityLvl * 1.25) &&
+			(this.money >= this.maxMoney * 0.5) &&
+			(this.maxMoney > 0);
+	}
+
 	// version formate des proprietes
 	get fhostname() { return ns.sprintf("%-20s", this.hostname); }
 	get frooted() { return ns.sprintf("%5t", this.rooted); }
@@ -34,6 +40,6 @@ export default class classServer {
 	get fhackLvl() { return ns.sprintf("%4d", this.hackLvl); }
 	get fports() { return ns.sprintf("%2d", this.ports); }
 	get fhackChance() { return ns.sprintf("%6s", ns.nFormat(this.hackChance, "0.00%")); }
-	get fhackTime() {return ns.sprintf("%6s", ns.nFormat(this.hackTime, "    0") + "s"); }
-	get fweakenTime() {return ns.sprintf("%6s", ns.nFormat(this.weakenTime, "    0") + "s"); }
+	get fhackTime() { return ns.sprintf("%6s", ns.nFormat(this.hackTime, "    0") + "s"); }
+	get fweakenTime() { return ns.sprintf("%6s", ns.nFormat(this.weakenTime, "    0") + "s"); }
 }
