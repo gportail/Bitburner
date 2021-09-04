@@ -1,7 +1,7 @@
 import {deepscan} from "deepscan.js";
 
 export async function main(ns) {
-	// var servers = deepscan(ns.getHostname(), ns);
+	//var servers = deepscan(ns.getHostname(), ns);
 	var host = ns.getHostname();
 	var servers = deepscan(host, ns);
 
@@ -49,7 +49,7 @@ export async function main(ns) {
 
 	for (var i = 0; i < servers.length; i++) {
 		s = servers[i];
-		if (s.hackLvl <= ns.getHackingLevel()) {
+		if ((s.hackLvl <= ns.getHackingLevel()) || (s.rooted)) {
 			ns.tprint(ns.sprintf("%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|",
 				s.fhostname,
 				s.frooted,
