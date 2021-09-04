@@ -1,15 +1,10 @@
-import {unlock} from "/modules/unlock.js";
-
 export async function main(ns) {
 	var target = ns.args[0];
 	if (target == undefined) {
 		target = ns.getHostname();
 	}
 	ns.tprint("Target = " + target);
-	if (!ns.hasRootAccess(target)) {
-		await unlock(target, ns);
-	}
-
+  
 	var script = ns.getRunningScript();
 	var maxMoney = ns.getServerMaxMoney(target);
 	var minSecLvl = ns.getServerMinSecurityLevel(target);

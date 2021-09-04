@@ -1,14 +1,9 @@
-import {unlock} from "/modules/unlock.js";
-
 export async function main(ns) {
 	var target = ns.args[0];
 	if (target == undefined) {
 		target = ns.getHostname();
 	}
 	ns.tprint("Target = " + target);
-	if (!ns.hasRootAccess(target)) {
-		await unlock(target, ns);
-	}
 
 	var script = ns.getRunningScript();
 	var maxMoney = ns.getServerMaxMoney(target);
@@ -23,13 +18,12 @@ export async function main(ns) {
 		availableMoney = ns.getServerMoneyAvailable(target);
 
 		if (secLvl > minSecLvl * 1.25) {
-			await ns.weaken(target,{ threads: script.thread });
+			await ns.weaken(target, { threads: script.thread });
 		} else if (availableMoney < maxMoney * 0.5) {
-			await ns.grow(target,{ threads: script.thread });
+			await ns.grow(target, { threads: script.thread });
 		} else {
-			return
+			break
 		}
 		ns.sleep(3000);
 	}
-
 }
