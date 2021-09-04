@@ -24,7 +24,8 @@ export default class classServer {
 	get isHackable() {
 		return (this.securityLvl <= this.minSecurityLvl * 1.25) &&
 			(this.money >= this.maxMoney * 0.5) &&
-			(this.maxMoney > 0);
+			(this.maxMoney > 0) &&
+         (this.hackLvl <= ns.getHackingLevel());
 	}
 
 	// version formate des proprietes

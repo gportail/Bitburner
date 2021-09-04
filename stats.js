@@ -5,14 +5,27 @@ export async function main(ns) {
 	var host = ns.getHostname();
 	var servers = deepscan(host, ns);
 
+   /**
+   * Sort by hackLvl 
+   */
+	/*
 	servers.sort(function(a, b) {
 		if (a.hackLvl < b.hackLvl) return -1;
 		if (a.hackLvl > b.hackLvl) return 1;
 		return 0;
+	});*/
+   /**
+   * Sort by maxMoney
+   */
+	servers.sort(function(a, b) {
+		if (a.maxMoney < b.maxMoney) return -1;
+		if (a.maxMoney > b.maxMoney) return 1;
+		return 0;
 	});
+
 	//ns.tprint("servers.length = " + servers.length);
 	var padChr = '=';
-	var fmt = "%-20s|%5s|%3s|%2s|%4s|%10s|%10s|%6s|%6s|%6s|%6s|%7s|%7s|%6s|";
+	var fmt = "%-20s|%5s|%4s|%2s|%4s|%10s|%10s|%6s|%6s|%6s|%6s|%7s|%7s|%6s|";
 	var s = ns.sprintf(fmt,
 		'Serveur',
 		'root',

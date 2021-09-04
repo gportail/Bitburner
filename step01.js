@@ -1,5 +1,7 @@
 import { deepscan } from "deepscan.js";
-import { unlock, installScriptOn, execScriptMaxThread } from "/modules/helper.js";
+import { execScriptMaxThread } from "/modules/helper.js";
+import { unlock } from "/modules/unlock.js";
+import { installScriptOn } from "/modules/installScriptOn.js";
 
 let theScripts = ['simple_grow.js', 'simple_hack.js', '/modules/helper.js'];
 let growScript = 'simple_grow.js';
