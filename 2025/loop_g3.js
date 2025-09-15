@@ -1,11 +1,11 @@
 import * as cl from "libs/colors.js";
-import * as l from "libs/logs.js";
+import { logf } from "libs/logs.js";
 import { moneyFactor } from "libs/constantes.js";
 
 // const moneyFactor = 0.80;
 
 function help(ns) {
-  ns.tprintf(`${cl.yellow}Augmente l'argent du serveur.\n`);
+  ns.tprintf(`${cl.info}Augmente l'argent du serveur jusqu\'au niveau requis`);
   ns.tprintf('usage : run g.js -c <target?> <option> ');
   ns.tprintf('options :');
   ns.tprintf('  -h          : aide');
@@ -17,7 +17,7 @@ function help(ns) {
 
 /** @param {NS} ns */
 export async function main(ns) {
-  let host = ns.getHostname();
+  let target = ns.getHostname();
 
   let params = ns.flags([
     ['h', false], // aide
@@ -30,29 +30,30 @@ export async function main(ns) {
     help(ns);
   }
 
-  l.disableNSlogs(ns);
+  ns.disableLog('ALL');
   let quiet = params['q'];
 
-  if (params['c'] != '') host = params['c'];
-  if (!quiet) l.logf(ns, "%s : Execution du script %s avec %s comme cible.", [ns.getHostname(), ns.getScriptName(), host]);
+  if (params['c'] != '') target = params['c'];
+ 
+  logf(ns, `La cible est ${cl.info}%s`, [target], quiet);
 
-  let minMoney = ns.getServerMaxMoney(host) * moneyFactor;
+  let minMoney = ns.getServerMaxMoney(target) * moneyFactor;
 
-  if (ns.getServerMaxMoney(host) == 0) {  // pas d'argent sur ce serveur
-    l.enableNSlogs(ns);
-    ns.exit(); 
+  if (ns.getServerMaxMoney(target) == 0) {  // pas d'argent sur ce serveur
+    ns.enableLog('ALL');
+    ns.exit();
   }
   while (true) {
     // si $ present < 80% du max$ => on fait grandir
-    if (ns.getServerMoneyAvailable(host) < minMoney) {
-      await ns.grow(host, { threads: ns.self.threads });
+    if (ns.getServerMoneyAvailable(target) < minMoney) {
+      await ns.grow(target, { threads: ns.self.threads });
     } else {
       if (params['i']) {
         await ns.sleep(1000);
         continue;
-      }
-      else {
-        l.enableNSlogs(ns);
+      } else {
+        logf(ns, `Fin du script avec comme cible ${cl.info}%s`, [target], quiet);
+        ns.enableLog('ALL');
         ns.exit();
       }
     }

@@ -1,3 +1,4 @@
+/** @param {NS} ns */
 /**
  * Calcul le nombre de thread max spour le {script} sur le serveur {serverName}
  * @return integer
@@ -13,7 +14,34 @@ export function calcNbThread(serverName, script, ns) {
  */
 export function runScript(script, serverName, ns) {
   var th = calcNbThread(serverName, script, ns);
-  ns.exec(script, serverName, th);
+  return ns.exec(script, serverName, th);
+}
+
+/**
+ * Execute un script et attend sa fin
+ * @param script string : le script a executer
+ * @param args[] les arguments à passer au script
+ */
+export async function runAndWait(ns, script, ...scriptargs) {
+  // let a = [script,1].concat(args);
+  // let pid = ns.run.apply(null, a);
+  let pid = ns.run(script, 1, ...scriptargs);
+  while (ns.isRunning(pid)) {
+    await ns.sleep(100);
+  }
+}
+
+/**
+ * Lance un script en mode silencieux ou non
+ */
+export function RunAScript(ns, quiet, scriptName, threads, ...scriptargs) {
+  if (quiet) scriptargs.push('-q');
+  return ns.run(scriptName, threads, ...scriptargs);
+}
+
+export function ExecAScript(ns, quiet, scriptName, host, threads, ...scriptargs) {
+  if (quiet) scriptargs.push('-q');
+  return ns.exec(scriptName, host, threads, ...scriptargs);
 }
 
 /**
@@ -69,6 +97,7 @@ export function isPurchasedByPlayer(server, ns) {
 export function runCommand(cmd) {
   const doc = eval('document');
   const terminalInput = doc.getElementById("terminal-input");
+  if (terminalInput == undefined) return;
   const enterPress = new KeyboardEvent('keydown',
     {
       bubbles: true,
@@ -93,9 +122,9 @@ export function progsAvailables(ns) {
   return count;
 }
 
-export function findServerWithNoRam(servers, ns){
+export function findServerWithNoRam(servers, ns) {
   let result = new Array();
-  for(s of servers){
+  for (s of servers) {
     if (ns.getServerMaxRam(s) == 0) result.push(s);
   }
   return result;

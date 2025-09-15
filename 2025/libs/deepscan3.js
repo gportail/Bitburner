@@ -1,7 +1,9 @@
+/** @param {NS} ns */
+
 import { calculGainSeconds } from "libs/lib.js";
 
 /** liste des serveurs découvert */
-let servers = new Array();
+export let servers = new Array();
 
 /**
  * Renvoie la liste des serveurs
@@ -84,6 +86,7 @@ export function sortServersByMoneyPerSec(ns, sl) {
     return 0;
   });
 }
+
 /**
  * Trie les serveurs par temp total pour w+g+h
  * @param sl string[] liste de serveur
@@ -99,18 +102,34 @@ export function sortServersByTotalTime(ns, sl) {
   });
 }
 
+/**
+ * Trie les serveurs par nom, insensible à la casse
+ * @param sl string[] liste de serveur
+ */
+export function sortServersByName(ns, sl) {
+  if (sl == undefined) sl = servers;
+  sl.sort(function (a, b) {
+    const a_info = a.toLowerCase();
+    const b_info = b.toLowerCase();
+    if (a_info > b_info) return 1;
+    if (a_info < b_info) return -1;
+   return 0;
+  });
+}
+
 /** 
  * liste les serveurs enfants de {fromServer}
+ * @return string[] Liste des serveurs
  */
-export function deepscan(fromServer, ns) {
+export function deepscan(ns, fromServer) {
   let neighbor = ns.scan(fromServer);
   for (let srv of neighbor) {
     if (srv == 'darkweb') continue;
     if (srv == 'home') continue;
     if (!servers.includes(srv)) {
       servers.push(srv);
-      deepscan(srv, ns);
+      deepscan(ns,srv);
     }
   }
+  return servers;
 }
-

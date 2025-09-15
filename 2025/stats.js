@@ -7,9 +7,9 @@ import { getScriptsRunning, timeformat, calculGainSeconds, isPurchasedByPlayer }
  */
 function printServersStats(ns, onlyRoot, withOwned) {
   let servers = ds.getServers();
-  ns.tprintf(`${cl.yellow}    | %-20s | %6s | %5s | %5s | %5s | %4s | %8s | %8s | %5s | %8s | %8s | %8s | %6s | %6s | %6s | %6s |`,
+  ns.tprintf(`${cl.info}    | %-20s | %6s | %5s | %5s | %5s | %4s | %8s | %8s | %5s | %8s | %8s | %8s | %6s | %6s | %6s | %6s |`,
     "Host", "root?", "secL", "minSL", "skill", "port", "Max$", "Curr$", "RAM", "Hack %", "Hack $", "Hack$/s", "WTime", "GTime", "HTime", "FTime");
-  ns.tprintf(`${cl.yellow}==================================================================================================================================`)
+  ns.tprintf(`${cl.info}========================================================================================================================================================================`)
   var count = 1;
   for (var i = 0; i < servers.length; i++) {
     let srv = servers[i];
@@ -17,7 +17,9 @@ function printServersStats(ns, onlyRoot, withOwned) {
     if (isPurchasedByPlayer(srv, ns) && !withOwned) continue;
     if (srv == "darkweb" && !ns.hasTorRouter()) continue;
     if (onlyRoot && !ns.hasRootAccess(srv)) continue;
-    var color = cl.bkgreen;
+    let color = cl.whiteOnGreen;
+    if (count % 2 != 0) color = cl.blackOnLightGrey;
+
     if (!ns.hasRootAccess(srv)) color = cl.red;
     ns.tprintf(`${color}%3d | %-20s | %-6t | %5s | %5s | %5d | %4d | %8s | %8s | %5s | %8s | %8s | %8s | %6s | %6s | %6s | %6s | %s `,
       count,
@@ -28,7 +30,8 @@ function printServersStats(ns, onlyRoot, withOwned) {
       ns.getServerRequiredHackingLevel(srv),
       ns.getServerNumPortsRequired(srv),
       ns.formatNumber(ns.getServerMaxMoney(srv), 2),
-      ns.formatNumber(ns.getServerMoneyAvailable(srv), 2),
+      // ns.formatNumber(ns.getServerMoneyAvailable(srv), 2),
+      ns.getServerMaxMoney(srv)>0 ? ns.formatPercent(ns.getServerMoneyAvailable(srv)/ns.getServerMaxMoney(srv),2) : 0,
       ns.formatRam(ns.getServerMaxRam(srv), 0),
       ns.formatPercent(ns.hackAnalyzeChance(srv), 2), // chance de hack
       ns.formatNumber(ns.hackAnalyze(srv) * ns.getServerMoneyAvailable(srv), 2),  // gain par thread
@@ -41,6 +44,20 @@ function printServersStats(ns, onlyRoot, withOwned) {
     );
     count++;
   }
+}
+
+
+function printHackNodeStats(ns) {
+  ns.tprintf(`${cl.info}Hacknode stats`);
+  ns.tprintf(`${cl.info}==============`);
+  ns.tprintf(`${cl.info}Nombre de nodes: %d/%d`, ns.hacknet.numNodes(), ns.hacknet.maxNumNodes());
+
+  let MoneyProd = 0;
+  for (let i = 0; i < ns.hacknet.numNodes(); i++) {
+    let HNstat = ns.hacknet.getNodeStats(i);
+    MoneyProd += HNstat.totalProduction;
+  }
+  ns.tprintf(`${cl.info}Argent produit: %s`, ns.formatNumber(MoneyProd, 2));
 }
 
 /**
@@ -95,6 +112,8 @@ export async function main(ns) {
       ds.sortServersByTotalTime(ns);
       break;
   }
-  ns.ui.clearTerminal();
+  //ns.ui.clearTerminal();
   printServersStats(ns, !params['a'], params['o']);
+  ns.tprintf("\n");
+  printHackNodeStats(ns);
 }

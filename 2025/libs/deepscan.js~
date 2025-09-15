@@ -27,7 +27,7 @@ export function sortServersByHackSkill(ns, sl) {
 
 /**
  * Trie les serveurs par MaxMoney
- * @param sl string[] liste de serveur
+ * @param sl string[] liste de serveur à trier
  */
 export function sortServersByMaxMoney(ns, sl) {
   if (sl == undefined) sl = servers;
@@ -42,7 +42,7 @@ export function sortServersByMaxMoney(ns, sl) {
 
 /**
  * Trie les serveurs par MaxMoney
- * @param sl string[] liste de serveur
+ * @param sl string[] liste de serveur à trier
  */
 export function sortServersByMaxRam(ns, sl) {
   if (sl == undefined) sl = servers;
@@ -58,7 +58,7 @@ export function sortServersByMaxRam(ns, sl) {
 
 /**
  * Trie les serveurs par chance de hack
- * @param sl string[] liste de serveur
+ * @param sl string[] liste de serveur à trier
  */
 export function sortServersByHackChance(ns, sl) {
   if (sl == undefined) sl = servers;
@@ -72,7 +72,7 @@ export function sortServersByHackChance(ns, sl) {
 }
 /**
  * Trie les serveurs par $/s
- * @param sl string[] liste de serveur
+ * @param sl string[] liste de serveur à trier
  */
 export function sortServersByMoneyPerSec(ns, sl) {
   if (sl == undefined) sl = servers;
@@ -86,7 +86,7 @@ export function sortServersByMoneyPerSec(ns, sl) {
 }
 /**
  * Trie les serveurs par temp total pour w+g+h
- * @param sl string[] liste de serveur
+ * @param sl string[] liste de serveur à trier
  */
 export function sortServersByTotalTime(ns, sl) {
   if (sl == undefined) sl = servers;
@@ -101,15 +101,14 @@ export function sortServersByTotalTime(ns, sl) {
 
 /** 
  * liste les serveurs enfants de {fromServer}
+ * @param fromServer string Serveur à partir duquel on cherche les autres serveurs
  */
 export function deepscan(fromServer, ns) {
   let neighbor = ns.scan(fromServer);
-  for (let srv of neighbor) {
-    if (srv == 'darkweb') continue;
-    if (srv == 'home') continue;
-    if (!servers.includes(srv)) {
-      servers.push(srv);
-      deepscan(srv, ns);
+  for (let i = 0; i < neighbor.length; i++) {
+    if (!servers.includes(neighbor[i])) {
+      servers.push(neighbor[i]);
+      deepscan(neighbor[i], ns);
     }
   }
 }

@@ -15,7 +15,7 @@ function help(ns) {
   ns.tprintf('  -h         : aide');
   ns.tprintf('  -c <cible> : la cible des scripts');
   ns.tprintf('  -f         : force la relance des scripts');
-  ns.tprintf('  -q         : silencieu');
+  ns.tprintf('  -q         : execution silencieuse');
 }
 
 

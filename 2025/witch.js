@@ -7,6 +7,6 @@ export async function main(ns) {
   while (true) {
     ns.ui.clearTerminal();
     ns.run(script);
-    await ns.sleep(5000);
+    await ns.sleep(2000);
   }
 }

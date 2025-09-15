@@ -1,5 +1,6 @@
-import { getServers, sortServersByHackSkill, deepscan } from "libs/deepscan.js";
-import { green, red, yellow } from "libs/colors.js";
+import { getServers, sortServersByHackSkill, deepscan } from "libs/deepscan3.js";
+import * as cl from "libs/colors.js";
+import { log, logf } from "libs/logs.js";
 
 const hack_script = "basic_hack.js";
 
@@ -7,7 +8,7 @@ const hack_script = "basic_hack.js";
  * Affiche l'aide
  */
 function help(ns) {
-  ns.tprintf(`${yellow}Passe en root les serveurs possibles`);
+  ns.tprintf(`${cl.info}Passe en root les serveurs possibles`);
   ns.tprintf('options :');
   ns.tprintf('  -h    : aide');
   ns.tprintf('  -q    : execution silencieuse');
@@ -23,21 +24,20 @@ export async function main(ns) {
 
   if (params['h']) {
     help(ns);
-    ns.exit();
   }
 
   let quiet = params['q'];
 
   let startServer = ns.getHostname();
-  deepscan(startServer, ns);
-  sortServersByHackSkill(ns);
-  let servers = getServers();
-  for (var i = 0; i < servers.length; i++) {
-    let srv = servers[i];
+  let serveurs = deepscan(ns, startServer);
+  sortServersByHackSkill(ns, serveurs);
+  for (let srv of serveurs) {
     if (srv == "darkweb" && !ns.hasTorRouter()) continue;
+    if (srv == 'home') continue;
     if (ns.getServerRequiredHackingLevel(srv) <= ns.getPlayer().skills.hacking) {
       if (ns.hasRootAccess(srv) == false) {
-        if (!quiet) ns.tprintf(`${red}Hack de %s (skill=%d, port=%d)`, srv, ns.getServerRequiredHackingLevel(srv), ns.getServerNumPortsRequired(srv));
+
+        logf(ns, `${cl.warn}Hack de %s (skill=%d, port=%d)`, [srv, ns.getServerRequiredHackingLevel(srv), ns.getServerNumPortsRequired(srv)], quiet);
         let openPortCount = 0;
         if (ns.getServerNumPortsRequired(srv) >= 1) {
           if (ns.fileExists("brutessh.exe", "home")) {
@@ -68,13 +68,10 @@ export async function main(ns) {
           ns.nuke(srv);
         }
         if (ns.hasRootAccess(srv)) {
-          if (!quiet) ns.tprintf(`${red}%s est hacké`, srv);
-/*           if (ns.getServerMaxMoney(srv) > 0) {
-            ns.scp(hack_script, srv);
-          } */
+          logf(ns, `${cl.warn}%s est hacké`, [srv], quiet);
         }
       } else {
-        if (!quiet) ns.tprintf(`${green}%s (%d) déjà hacké`, srv, ns.getServerRequiredHackingLevel(srv));
+        logf(ns, `${cl.info}%s (%d) déjà hacké`, [srv, ns.getServerRequiredHackingLevel(srv)], quiet);
       }
     }
   }
