@@ -39,6 +39,16 @@ export function RunAScript(ns, quiet, scriptName, threads, ...scriptargs) {
   return ns.run(scriptName, threads, ...scriptargs);
 }
 
+/**
+ * Execute un script sur une machine distante
+ * @param {*} ns 
+ * @param {*} quiet mode silencieux
+ * @param {*} scriptName le script a executer, doit etre présent sur l'hote
+ * @param {*} host machine qui execute le script
+ * @param {*} threads nombre de thread 
+ * @param  {...any} scriptargs arguments du script
+ * @returns Returns the PID of a successfully started script, and 0 otherwise.
+ */
 export function ExecAScript(ns, quiet, scriptName, host, threads, ...scriptargs) {
   if (quiet) scriptargs.push('-q');
   return ns.exec(scriptName, host, threads, ...scriptargs);
