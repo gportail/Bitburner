@@ -16,7 +16,7 @@ function help(ns) {
 
 /** @param {NS} ns */
 export async function main(ns) {
-  const scripts = ['simple_g3.js', 'simple_w3.js', 'simple_h3.js', 'loop_g3.js', 'loop_w3.js', 'loop_h3.js', 'basic_hack3.js', 'libs/colors.js', 'libs/constantes.js', 'libs/logs.js'];
+  const scripts = ['simple_g3.js', 'simple_w3.js', 'simple_h3.js', 'loop_g4.js', 'loop_w4.js', 'loop_h4.js', 'basic_hack4.js', 'libs/colors.js', 'libs/constantes.js', 'libs/logs.js', 'single_w_and_g4.js'];
 
   var params = ns.flags([
     ['h', false], // aide
