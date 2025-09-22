@@ -116,11 +116,72 @@ export class clServer {
   /**
    * Calcul le nombre de thread possible pour le script
    * @param {string} script Le script a executer
-   * @returns {number}
+   * @returns {integer}
    */
   nbThread(script) {
     let ScrRam = this.ns.getScriptRam(script);
-    return Math.trunc(this.FreeRam / ScrRam);
+    return Math.floor(this.FreeRam / ScrRam);
+  }
+
+  /**
+  * Calcul le nombre de thread de GROW pour avoir le {TargetMoney}$ sur le serveur
+  * @param {number} TargetMoney Argent voulu sur le serveur
+  * @returns {integer} 
+  */
+  calcNbGrowThread(TargetMoney) {
+    if (TargetMoney < this.MoneyAvailable) return 0;
+    let multiplier = Math.ceil(TargetMoney / this.MoneyAvailable); // calcul par combien il faut multiplier MoneyAvailable pour avoir TargetMoney
+    let growThread = this.ns.growthAnalyze(this.name, multiplier); // calcul le nombre de thread de Grow pour obtenir TargetMoney
+    return Math.ceil(growThread);
+  }
+
+  /**
+   * Calcul le nombre de thread pour hack {percentMaxMoney}% du MaxMoney du serveur
+   * @param {number} percentMaxMoney Le pourcentage de MaxMoney que l'on veut hacker (0..1)
+   * @returns {integer}   
+   */
+  calcNbHackThreadPercent(percentMaxMoney) {
+    let Mnt = this.MaxMoney * percentMaxMoney;
+    return this.calcNbHackThreadAmount(Mnt);
+  }
+
+  /**
+   * Calcul le nombre de thread pour hack {Amount}$ du serveur
+   * @param {number} Amount 
+   * @returns {integer}
+   */
+  calcNbHackThreadAmount(Amount) {
+    return Math.ceil(this.ns.hackAnalyzeThreads(this.name, Amount));
+  }
+
+  /**
+   * Calcul l'augmentation de SecLvl pour un hack de {threads} threads
+   * @param {integer} threads 
+   * @returns {number}
+   */
+  calcSecLvlOnHack(threads) {
+    return this.ns.hackAnalyzeSecurity(threads, this.name);
+  }
+
+  /**
+   * Calcul l'augmentation de SecLvl pour un grow de {threads} threads
+   * @param {integer} threads 
+   * @returns {number}
+   */
+  calcSecLvlOnGrow(threads) {
+    return this.ns.growthAnalyzeSecurity(threads, this.name);
+  }
+
+  /**
+   * Calcul le nombre de thread de WEAKEN pour diminuer le SecLvl de {WeakenAmount}  
+   * @param {number} WeakenAmount 
+   */
+  calcThreadToWeaken(WeakenAmount) {
+    let th = 1;
+    while (this.ns.weakenAnalyze(th) < WeakenAmount) {
+      th++;
+    }
+    return th;
   }
 }
 
