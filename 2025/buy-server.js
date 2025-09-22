@@ -5,6 +5,8 @@ import * as cl from "libs/colors.js";
 import { runAndWait } from "libs/lib.js";
 import { logf } from "libs/logs.js";
 
+const ScriptDeploy = 'deploy_single3.js';
+
 /**
  * Affiche l'aide
  */
@@ -73,7 +75,7 @@ export async function main(ns) {
       }
       name = rename(ns, name, prefix);
       logf(ns, `${cl.info}Achat du serveur %s avec %d Go de ram`, [name, ram], false);
-      await runAndWait(ns, 'deploy_single3.js', '-c', name);
+      await runAndWait(ns, ScriptDeploy, '-c', name);
     }
   }
 }
