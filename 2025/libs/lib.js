@@ -57,7 +57,7 @@ export function ExecAScript(ns, quiet, scriptName, host, threads, ...scriptargs)
 /**
  * Renvoie un tableau des scripts en cour d'execution sur {host}
  */
-export function getScriptsRunning(host, ns) {
+export function getScriptsRunning(ns, host) {
   let oPS = ns.ps(host);
   let scripts = [];
   for (let i = 0; i < oPS.length; i++) {

@@ -69,7 +69,7 @@ function localHack(ns, target) {
   if (ns.getServerMaxRam(target) == 0) return;  // pas de RAM on ignore
   if (ns.getServerMoneyAvailable(target) == 0) return; // pas de $ on ignore
   if (ns.hasRootAccess(target)) {
-    if (getScriptsRunning(target, ns).includes(ScriptBasic)) return;
+    if (getScriptsRunning(ns,target).includes(ScriptBasic)) return;
     logf(ns, "[localHack] Lancement de %s sur le serveur %s", [ScriptBasic, target], quiet);
     ns.killall(target);
     ExecAScript(ns, quiet, ScriptBasic, target, calcNbThread(target, ScriptBasic, ns));
