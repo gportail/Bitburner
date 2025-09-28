@@ -1,9 +1,9 @@
 /**
  * Achete les programme si il y a assez de $
  */
-import * as l from "../libs/logs.js";
-import { runCommand } from "../libs/lib.js";
-import * as cl from "../libs/colors.js";
+import * as l from "./libs/logs.js";
+import { runCommand } from "./libs/lib.js";
+import * as cl from "./libs/colors.js";
 
 /**
  * Affiche l'aide
