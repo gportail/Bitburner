@@ -8,7 +8,7 @@ import { createKillFlag } from "./libs/process.js";
  * Affiche l'aide
  */
 function help(ns) {
-  ns.tprintf(`${cl.info}Tue un processus.`);
+  ns.tprintf(`${cl.info}Tue un processus a la fin de son cycle si le processus le gère.`);
   ns.tprintf('options :');
   ns.tprintf('  -h    : aide');
   ns.tprintf('  --pid : Id du processus a tuer');
