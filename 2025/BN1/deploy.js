@@ -1,7 +1,7 @@
 /**
  * Deploie les script sur 1 serveur
  */
-import * as cl from "libs/colors.js";
+import * as cl from "./libs/colors.js";
 import { deployFiles } from "./libs/rootServeur.js";
 import { DeployScripts } from "./libs/constantes.js"
 import { deepscan, sortServersByHackSkill } from "./libs/deepscan.js";
