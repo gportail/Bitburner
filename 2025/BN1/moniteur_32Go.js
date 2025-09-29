@@ -99,7 +99,7 @@ function calculThreadHack(ns, target) {
   let Amount = ns.getServerMaxMoney(target) * (1 - C.moneyFactor);
   let HackThread = Math.ceil(ns.hackAnalyzeThreads(target, Amount));
   // augmentation du SecLvl pour HackThread
-  let secLvlHack = ns.hackAnalyzeSecurity(HackThread, target);
+  // let secLvlHack = ns.hackAnalyzeSecurity(HackThread, target);
   // on veut minimiser la progression du SecLvl => on diminue le nombre de thread pour être dans la limite voulue
   let minSevLvl = ns.getServerMinSecurityLevel(target);
   let maxSecLvl = minSevLvl * C.secLvlFactor;
