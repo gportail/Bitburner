@@ -1,11 +1,13 @@
 /**
  * Les constantes
  */
-
 export const moneyFactor = 0.8;  // seuil de 80% du max money pour commencer a hack le serveur
 export const secLvlFactor = 1.15; // seuil du niveau de securite de +25% à partir duquel on considere le hack possible
 export const secLvlTolerance = 0.05;  // tolerance sur le 
-export const ScriptBuyProgram = 'BN1/buy-programs.js';
+
+export const ScriptBuyProgram = 'BN1/buy-programs-ex.js';
+// export const ScriptBuyProgram = singularityAvailable(ns) ? 'BN1/buy-programs-ex.js' : 'BN1/buy-programs.js';
+
 // export const ScriptAutoHack = 'autohack.js';
 export const ScriptDeploySingle = 'BN1/deploy_single.js';
 // export const ScriptSingleWG = 'single_w_and_g4.js';
@@ -26,6 +28,12 @@ export const ScriptLoopSingleH = 'BN1/loop_singleH.js';
 
 export const ScriptBasic = 'BN1/basic_hack.js';
 // export const ScriptKillOwned = 'kill-all-scripts-on-owned.js';
-export const DeployScripts = ['./basic_hack.js', './libs/constantes.js', "./libs/colors.js", "./libs/logs.js", "./singleW.js", 
+export const DeployScripts = ['./basic_hack.js', './libs/constantes.js', "./libs/colors.js", "./libs/logs.js", "./singleW.js",
   "./singleG.js", "./singleH.js", "./loop_singleW.js", "./loop_singleG.js", "./loop_singleH.js"];
 export const Moniteur32Go = 'BN1/moniteur_32Go.js';
+
+export const ScriptBackdoor = 'BN1/backdoorEx.js'
+
+export const logStatPort = 1;
+export const logStatFile = '/logs/stats.txt';
+export const logListenPorts = [logStatPort];
