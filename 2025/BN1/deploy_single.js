@@ -1,8 +1,8 @@
 /**
  * Deploie les script sur 1 serveur
  */
-import * as cl from "libs/colors.js";
-import { logf } from "libs/logs.js";
+import * as cl from "./libs/colors.js";
+import { logf } from "./libs/logs.js";
 import { deployFiles } from "./libs/rootServeur.js";
 import { DeployScripts } from "./libs/constantes.js"
 
