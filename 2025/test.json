@@ -1,0 +1,5 @@
+{
+  "moneyFactor": 0.8,
+  "secLvlFactor": 1.15,
+  "secLvlTolerance": 0.5
+}
