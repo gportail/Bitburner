@@ -47,6 +47,10 @@ export async function main(ns) {
     if (!ns.fileExists(prog[0], 'home')) {
       if (!ns.hasTorRouter()) {
         l.log(ns, `${cl.warn}Il faut acheter le routeur Tor`);
+        if (ns.getServerMoneyAvailable('home') > 200000){ 
+          ns.singularity.purchaseTor();
+          l.log(ns, `${cl.warn}Routeur Tor acheté`);
+        } 
         ns.exit();
       }
       if (ns.getServerMoneyAvailable('home') > prog[1]) {
