@@ -1,4 +1,5 @@
 import * as cl from "./libs/colors.js";
+import { logStatsToServer } from "./libs/logs.js";
 /**
  * Affiche l'aide
  */
@@ -24,5 +25,6 @@ export async function main(ns) {
   let target = params['c'];
   if (target == '') help(ns);
 
-  await ns.grow(target, { threads: ns.self.threads });
+  let gain = await ns.grow(target, { threads: ns.self.threads });
+  logStatsToServer(ns, target, 0, gain);
 }

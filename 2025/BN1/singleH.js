@@ -1,5 +1,5 @@
 import * as cl from "./libs/colors.js";
-import { logToFile } from "./libs/logs.js";
+import { logStatsToServer } from "./libs/logs.js";
 /**
  * Affiche l'aide
  */
@@ -24,6 +24,7 @@ export async function main(ns) {
   }
   let target = params['c'];
   if (target == '') help(ns);
- 
-  await ns.hack(target, { threads: ns.self.threads });
+
+  let gain = await ns.hack(target, { threads: ns.self.threads });
+  logStatsToServer(ns, target, gain);
 }
