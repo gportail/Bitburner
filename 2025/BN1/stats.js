@@ -18,7 +18,7 @@ function buildInfos() {
   info.push({ title: ' Cur$  ', dataFormat: '%7s', fct: function (ns, srv) { return ns.formatNumber(ns.getServerMoneyAvailable(srv), 2) } });
   info.push({ title: '  Cur$% ', dataFormat: '%8s', fct: function (ns, srv) { return ns.getServerMaxMoney(srv) > 0 ? ns.formatPercent(ns.getServerMoneyAvailable(srv) / ns.getServerMaxMoney(srv), 2) : 0; } });
   info.push({ title: ' RAM ', dataFormat: '%5s', fct: function (ns, srv) { return ns.formatRam(ns.getServerMaxRam(srv), 0) } });
-  info.push({ title: ' FRam ', dataFormat: '%6s', fct: function (ns, srv) { return ns.formatRam(ns.getServerMaxRam(srv) - ns.getServerUsedRam(srv), 1) } });
+  info.push({ title: ' FRam  ', dataFormat: '%7s', fct: function (ns, srv) { return ns.formatRam(ns.getServerMaxRam(srv) - ns.getServerUsedRam(srv), 1) } });
   info.push({ title: 'Hack % ', dataFormat: '%7s', fct: function (ns, srv) { return ns.formatPercent(ns.hackAnalyzeChance(srv), 1) } });  // chance de hack
   info.push({ title: 'Hack $', dataFormat: '%6s', fct: function (ns, srv) { return ns.formatNumber(ns.hackAnalyze(srv) * ns.getServerMoneyAvailable(srv), 1) } });  // gain par thread
   info.push({ title: ' Hack$/s ', dataFormat: '%7s/s', fct: function (ns, srv) { return ns.formatNumber(calculGainSeconds(ns, srv), 2) } }); // gain $/s
