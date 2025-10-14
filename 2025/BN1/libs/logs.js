@@ -2,6 +2,7 @@
  * Gestion des logs
  */
 import * as cl from "./colors.js";
+import * as C from "./constantes.js";
 
 /**
  * Liste des fonctions dont on desactive le log
@@ -31,26 +32,27 @@ export function enableNSlogs(ns) {
  */
 export function log(ns, msg, quiet = false) {
   let color = cl.loghead;
+  let dt = (new Date()).toLocaleString();
   if (msg == "")
     ns.print("\n")
   else
-    ns.printf(`${color}[%s@%s]${cl.reset} %s`, ns.getScriptName(), ns.getHostname(), msg);
+    ns.printf(`${dt}${color}[%s@%s]${cl.reset} %s`, ns.getScriptName(), ns.getHostname(), msg);
   if (!quiet) {
     if (msg == "")
       ns.tprintf("\n")
     else
-      ns.tprintf(`${color}[%s@%s]${cl.reset} %s`, ns.getScriptName(), ns.getHostname(), msg);
+      ns.tprintf(`${dt}${color}[%s@%s]${cl.reset} %s`, ns.getScriptName(), ns.getHostname(), msg);
   }
 }
 
 export function logFile(ns, msg) {
-  let filename = ns.getHostname()+ "_" + ns.getScriptName().replace('.js','.txt');
+  let filename = ns.getHostname() + "_" + ns.getScriptName().replace('.js', '.txt');
   logToFile(ns, msg, filename);
 }
 
-export function logToFile(ns,msg,filename){
+export function logToFile(ns, msg, filename) {
   ns.write(filename, msg + "\n", "a");
-} 
+}
 /**
  * Log un message formaté
  * @param msg string le message
@@ -66,3 +68,13 @@ export function debugf(ns, format, args = [], quiet = false) {
   let s = ns.vsprintf(`${cl.cyan}%s:%s:DEBUG:%s`, [ns.getScriptName(), (new Date()).toLocaleTimeString('fr-FR'), format]);
   logf(ns, s, args, quiet);
 }
+
+export function logToServer(ns, port, from, datas) {
+  let data = '{ "script": "' + ns.getScriptName() + '", "from": "' + from + '", "datas": ' + datas + ' }';
+  ns.writePort(port, data);
+}
+
+export function logStatsToServer(ns, target, hackMnt = 0, growMnt = 0, weakenMnt = 0) {
+  let data = '{  "target": "' + target + '", "hack": ' + hackMnt + ', "grow": ' + growMnt + ', "weaken": ' + weakenMnt + '}';
+  logToServer(ns, C.logStatPort, target, data);
+} 
