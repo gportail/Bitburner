@@ -26,7 +26,7 @@ export async function main(ns) {
   let target = params['c'];
   if (target == '') help(ns);
 
-  let co = 'run connect.js ' + target;
+  let co = 'run BN1/connect.js ' + target;
   runCommand(co);
   await ns.sleep(1000);
   runCommand('backdoor');
