@@ -1,7 +1,7 @@
 /**
  * Upgrade un serveur
  */
-import * as cl from "libs/colors.js";
+import * as cl from "./libs/colors.js";
 
 /**
  * Affiche l'aide
