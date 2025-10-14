@@ -1,7 +1,7 @@
 /**
  * v5/moniteur_32Go.js
  * 
- * Moniteur d'execution a utiliser avec moins de 16 Go de RAM
+ * Moniteur d'execution a utiliser avec au moins 32 Go de RAM
  */
 
 
@@ -9,15 +9,16 @@ import * as cl from "./libs/colors.js";
 import * as C from "./libs/constantes.js";
 import { logf, log, logToFile } from "./libs/logs.js";
 import * as DS from "./libs/deepscan.js";
-import { calcNbThread, calcNbThreadPossible, getScriptsRunning } from "./libs/lib.js";
-import { ExecAScript, RunAScript } from "./libs/lib.js";
+import { calcNbThread, calcNbThreadPossible, getScriptsRunning, runScript } from "./libs/lib.js";
+import { ExecAScript, RunAScript, runAndWait } from "./libs/lib.js";
 import { rootServeur, deployFiles } from "./libs/rootServeur.js";
+import { renameServer, getMaxBuyableServer } from "./buy-server.js";
 
 let serveurs = new Array();
 export let quiet = false;
 let loopNb = 0;
 
-const DureeCycle = 15;  // durée d'un cycle en s
+const DureeCycle = 10;  // durée d'un cycle en s
 let emptyServers; // liste des serveurs sans $ et avec de la ram
 
 /**
@@ -50,6 +51,9 @@ function doRootServer(ns) {
         if (rootServeur(ns, target, quiet)) {
           logf(ns, "[doRootServer] Lancement du deploiement des fichier sur %s", [target], quiet);
           deployFiles(ns, target, C.DeployScripts, quiet);
+          if (target != 'w0r1d_d43m0n') {
+            ns.run(C.ScriptBackdoor, 1, '-c', target);
+          }
         }
       }
     }
@@ -99,10 +103,12 @@ function calculThreadHack(ns, target) {
   let Amount = ns.getServerMaxMoney(target) * (1 - C.moneyFactor);
   let HackThread = Math.ceil(ns.hackAnalyzeThreads(target, Amount));
   // augmentation du SecLvl pour HackThread
-  // let secLvlHack = ns.hackAnalyzeSecurity(HackThread, target);
+  let secLvlHack = ns.hackAnalyzeSecurity(HackThread, target);
+
   // on veut minimiser la progression du SecLvl => on diminue le nombre de thread pour être dans la limite voulue
   let minSevLvl = ns.getServerMinSecurityLevel(target);
   let maxSecLvl = minSevLvl * C.secLvlFactor;
+  // diminution du nombre de thread pour être juste au dessus de maxSecLvl
   while (ns.hackAnalyzeSecurity(HackThread, target) > maxSecLvl - minSevLvl) HackThread--;
   return Math.ceil(HackThread++);
 }
@@ -131,7 +137,7 @@ function startScriptOnEmptyServer(ns, target, script, threads) {
     if (!ns.hasRootAccess(srv)) continue;
     shareRunning = ns.isRunning(C.ScriptShare, srv);
     if (shareRunning) {
-      ns.kill(C.ScriptShare);
+      // ns.kill(C.ScriptShare);
     }
     let th = Math.min(calcNbThreadPossible(srv, script, ns), threads);  // nombre de thread a lancer sur SRV
     if (th > 0) {
@@ -144,7 +150,7 @@ function startScriptOnEmptyServer(ns, target, script, threads) {
     }
     threads -= th;
     if (shareRunning) {
-      ExecAScript(ns, quiet, C.ScriptRunShare, srv, 1);
+      // ExecAScript(ns, quiet, C.ScriptRunShare, srv, 1);
       shareRunning = false;
     }
     if (threads <= 0) return 0;
@@ -191,6 +197,75 @@ function listEmptyServers(ns, serveurs) {
   return esrv;
 }
 
+/**
+ * Tue le processus précédent.
+ * @param {NS} ns 
+ */
+function stopOldMoniteur32(ns) {
+  let PS = ns.ps();
+  for (let p of PS) {
+    if (p.pid != ns.pid) ns.kill(p.pid);
+  }
+}
+
+async function buyServeurs(ns) {
+  // on peut acheter des serveurs
+  let ownedS = ns.getPurchasedServers();
+  if (getMaxBuyableServer(ns) > 0) {
+    logf(ns, `${cl.red}Achat de serveur.`, [], false);
+    let ram = 1024;
+    let price = ns.getPurchasedServerCost(ram);
+    if (price < ns.getServerMoneyAvailable('home') / 2) {
+      let name = ns.purchaseServer('SRV', ram);
+      name = renameServer(ns, name, 'SRV');
+      await runAndWait(ns, C.ScriptDeploySingle, '-c', name);
+    }
+  } else {
+    // on cherche le serveur avec le moins de ram
+    let lowServer = 'x';
+    let lowRam = 0;
+    logf(ns, `${cl.red}Upgrade de serveur.`, [], false);
+    // ns.tprint(ownedS + '  ' + lowRam);
+    for (let s of ownedS) {
+      if (lowRam == 0){
+        lowRam = ns.getServerMaxRam(s);
+        lowServer = s;
+      } 
+      if (lowRam > ns.getServerMaxRam(s)) {
+        lowRam = ns.getServerMaxRam(s);
+        lowServer = s;
+      }
+    }
+    // calcul du prix pour doubler la ram du plus petit serveur.
+    let price = 0;
+    if (lowServer != '') {
+      price = ns.getPurchasedServerUpgradeCost(lowServer, lowRam * 2);
+      // achat si budget disponible
+      if (price < ns.getServerMoneyAvailable('home') * 0.5) {
+        logf(ns, `${cl.red}Upgrade du serveur %s.`, [lowServer], false);
+        ns.upgradePurchasedServer(lowServer, lowRam * 2);
+      }
+    }
+  }
+}
+
+
+function saveStats(ns, server) {
+  // log(ns, 'saveStats on ' + server + '   loop=' + loopNb, false);
+  let statFile = 'logs/stats_' + server + '.txt';
+  if (!ns.fileExists(statFile)) {
+    ns.write(statFile, "loop;MinSec;BaseSec;SecLvl;MaxMoney;Money;GrowMultiplier\n", 'a');
+  }
+  let SecMin = ns.getServerMinSecurityLevel(server);
+  let SecBase = ns.getServerBaseSecurityLevel(server);
+  let SecLvl = ns.getServerSecurityLevel(server);
+  let MoneyMax = ns.getServerMaxMoney(server);
+  let Money = ns.getServerMoneyAvailable(server);
+  let Growth = ns.getServerGrowth(server);
+  let line = ns.vsprintf('%f;%f;%f;%f;%f;%f;%f', [loopNb, SecMin, SecBase, SecLvl, MoneyMax, Money, Growth]);
+  ns.write(statFile, line + "\n", 'a');
+}
+
 /** @param {NS} ns */
 export async function main(ns) {
   var params = ns.flags([
@@ -211,27 +286,29 @@ export async function main(ns) {
 
   let waitTimer = DureeCycle * 1000;  // temps entre chaque boucle
 
-  // serveurs = DS.deepscan(ns, 'home');
-  // DS.sortServersByHackSkill(ns, serveurs);
-  // emptyServers = listEmptyServers(ns, serveurs); // liste des serveurs sans $ et avec de la ram
-  // ns.tprint(emptyServers);
-
+  // tue le moniteur_32Go precedent
+  stopOldMoniteur32(ns);
 
   while (true) {
+
     if (loopNb % 4 == 0) {
       log(ns, "Scan des serveurs présents", quiet);
       serveurs = DS.deepscan(ns, 'home');
       DS.sortServersByHackSkill(ns, serveurs);
       emptyServers = listEmptyServers(ns, serveurs); // liste des serveurs sans $ et avec de la ram
     }
-    if (loopNb % 4 == 0) buyPrograms(ns);  // achat des programmes tous les 4 cycles (60s) // il faut 16Go
-    if (loopNb % 3 == 0) doRootServer(ns); // hack des serveurs et deploiement des scripts tous les 3 cycle (45s)
+    if (loopNb % 6 == 0) buyPrograms(ns);  // achat des programmes tous les 4 cycles (60s) // il faut 16Go
+    //    if (loopNb % 4 == 0) doRootServer(ns); // hack des serveurs et deploiement des scripts tous les 3 cycle (45s)
+    doRootServer(ns); // hack des serveurs et deploiement des scripts tous les 3 cycle (45s)
 
+    let needServer = false;
     for (let target of serveurs) {
       if (target == "darkweb" && !ns.hasTorRouter()) continue;
       if (target == "home") continue;
       if (!ns.hasRootAccess(target)) continue;
       if (ns.getServerMaxMoney(target) == 0) continue;  // pas de $ on passe au suivant
+
+      // if (loopNb % 6 == 0) saveStats(ns, target); // toute le 1mn on lit les stats de target
 
       // le serveur target a des $
       let resteTh = 0;
@@ -247,7 +324,8 @@ export async function main(ns) {
         WThread = startScriptOnTarget(ns, target, C.ScriptSingleW, WThread);
         resteTh = startScriptOnEmptyServer(ns, target, C.ScriptSingleW, WThread);
         if (resteTh > 0) {
-          log(ns, `${cl.red}[main][weaken]Pas assez de place pour executer tous les thread (${target}) `, false);
+          // log(ns, `${cl.red}[main][weaken]Pas assez de place pour executer tous les thread (${target}) `, false);
+          needServer = true;
         }
         continue;
       }
@@ -264,7 +342,8 @@ export async function main(ns) {
         GThread = startScriptOnTarget(ns, target, C.ScriptSingleG, GThread);
         resteTh = startScriptOnEmptyServer(ns, target, C.ScriptSingleG, GThread);
         if (resteTh > 0) {
-          log(ns, `${cl.red}[main][grow]Pas assez de place pour executer tous les thread (${target}) `, false);
+          // log(ns, `${cl.red}[main][grow]Pas assez de place pour executer tous les thread (${target}) `, false);
+          needServer = true;
         }
         continue;
       }
@@ -279,21 +358,14 @@ export async function main(ns) {
       HThread = startScriptOnTarget(ns, target, C.ScriptSingleH, HThread);
       resteTh = startScriptOnEmptyServer(ns, target, C.ScriptSingleH, HThread);
       if (resteTh > 0) {
-        log(ns, `${cl.red}[main][hack]Pas assez de place pour executer tous les thread (${target}) `, false);
+        // log(ns, `${cl.red}[main][hack]Pas assez de place pour executer tous les thread (${target}) `, false);
+        needServer = true;
       }
+    }
 
-
-      // nombre de thread necessaire
-      // let thread = calcOptimalThread(ns, target);
-      // lancement sur la target avec consommation du nombre de thread
-      // if (ns.getServerMaxRam(target) > 0) thread = localHack(ns, target, thread);  // le serveur a de la RAM, il se hack lui meme
-      // lancement sur des serveurs sans $ avec consommation des thread
-
-
-      // TODO : faire l'inverse : quand un serveur est en dehors des criteres pour être hack alors chercher un serveur sans $ pour le W&G 
-      // if ((ns.getServerMaxRam(target) > 0) && (ns.getServerMoneyAvailable(target) == 0)) remoteWG(ns, target); // le serveur a de la ram mais pas de $ => on hack un autre serveur
-      //if ((ns.getServerMaxRam(target) == 0) && (ns.getServerMoneyAvailable(target) > 0)) hackServerWithNoRam(ns, target);
-
+    if (needServer) {
+      logf(ns, `${cl.red}Il faut acheter/améliorer des serveurs pour executer tous les threads.`, [], false);
+      await buyServeurs(ns);
     }
 
     if ((ns.getServerMaxRam('home') < 64) && (ns.getServerMoneyAvailable('home') > 10.1e6)) {
@@ -302,14 +374,10 @@ export async function main(ns) {
       logf(ns, `${cl.red}****************************************`, [], false);
     }
 
-    // if (ns.getServerMaxRam('home') >= 64) {
-    //   logf(ns, `${cl.red}******************************************`, [], false);
-    //   logf(ns, `${cl.red}Il faut lancer le script moniteur_32Go.js `, [], false);
-    //   logf(ns, `${cl.red}******************************************`, [], false);
-    //   break;
-    // }
     if (oneRun) break; // pour debug
     await ns.sleep(waitTimer);
+
+    loopNb++;
   }
 
   ns.enableLog('ALL');
