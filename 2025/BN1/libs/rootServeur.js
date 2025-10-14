@@ -53,6 +53,13 @@ export function rootServeur(ns, target, quiet = false) {
       logf(ns, `${cl.info}%s (%d) déjà hacké`, [target, ns.getServerRequiredHackingLevel(target)], quiet);
     }
   }
+  // if (rooted) {
+  //   if (['CSEC', 'avmnite-02h', 'I.I.I.I', 'run4theh111z'].includes(target)) {
+  //     ns.singularity.connect(target);
+  //     ns.singularity.installBackdoor();
+  //     ns.singularity.connect('home');
+  //   }
+  // }
   return rooted;
 }
 
@@ -82,4 +89,62 @@ export function deployFiles(ns, target, files, quiet = false) {
       logf(ns, "%s", [''], quiet);
     }
   }
-} 
+}
+
+/**
+ * Calcul le chemin vers un serveur
+ */
+function getPathTo(ns, fromServer, toServer) {
+  let [results, isFound] = findPath(ns, toServer, fromServer, [], [], false);
+  if (isFound) return results;
+  return [];
+}
+
+function findPath(ns, target, serverName, serverList, ignore, isFound) {
+  // https://www.reddit.com/r/Bitburner/comments/rm097d/find_server_path_script/
+  ignore.push(serverName);
+  let scanResults = ns.scan(serverName);
+  for (let server of scanResults) {
+    if (ignore.includes(server)) {
+      continue;
+    }
+    if (server === target) {
+      serverList.push(server);
+      return [serverList, true];
+    }
+    serverList.push(server);
+    [serverList, isFound] = findPath(ns, target, server, serverList, ignore, isFound);
+    if (isFound) {
+      return [serverList, isFound];
+    }
+    serverList.pop();
+  }
+  return [serverList, false];
+}
+
+export function moveTo(ns, target) {
+  let path = getPathTo(ns, ns.singularity.getCurrentServer(), target);
+  for (let p of path) {
+    ns.singularity.connect(p);
+  }
+}
+
+/**
+ * Backdoor un serveur.
+ * @param {NS} ns 
+ * @param {*} target 
+ */
+export async function backdoorServer(ns, target) {
+  // let path = getPathTo(ns, ns.singularity.getCurrentServer(), target);
+  // for (let p of path) {
+  //   ns.singularity.connect(p);
+  // }
+  moveTo(ns, target);
+  if (target == ns.singularity.getCurrentServer()) {
+    logf(ns, `${cl.info}Connecté à %s`, [target], false);
+    await ns.singularity.installBackdoor();
+    moveTo(ns, 'home');
+  } else {
+    logf(ns, `${cl.error}Impossible de se connecter à %s`, [target], false);
+  }
+}
