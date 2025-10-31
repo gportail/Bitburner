@@ -6,6 +6,7 @@ export const secLvlFactor = 1.15; // seuil du niveau de securite de +25% à part
 export const secLvlTolerance = 0.05;  // tolerance sur le 
 
 export const ScriptBuyProgram = 'BN1/buy-programs-ex.js';
+export const ScriptBuyProgramSing = 'BN1/buy-programs-ex.js';
 // export const ScriptBuyProgram = singularityAvailable(ns) ? 'BN1/buy-programs-ex.js' : 'BN1/buy-programs.js';
 
 // export const ScriptAutoHack = 'autohack.js';
@@ -20,6 +21,7 @@ export const ScriptSingleH = 'BN1/singleH.js';
 
 export const ScriptShare = 'BN1/shareRam.js';
 export const ScriptRunShare = 'BN1/run_share.js';
+export const ScriptRunShareOnOwned = 'BN1/run_share_on_owned.js';
 
 
 export const ScriptLoopSingleW = 'BN1/loop_singleW.js';
@@ -32,7 +34,8 @@ export const DeployScripts = ['./basic_hack.js', './libs/constantes.js', "./libs
   "./singleG.js", "./singleH.js", "./loop_singleW.js", "./loop_singleG.js", "./loop_singleH.js"];
 export const Moniteur32Go = 'BN1/moniteur_32Go.js';
 
-export const ScriptBackdoor = 'BN1/backdoorEx.js'
+export const ScriptBackdoor = 'BN1/backdoorEx.js';
+export const ScriptBackdoorSing = 'BN1/backdoorEx.js';
 
 export const logStatPort = 1;
 export const logStatFile = '/logs/stats.txt';

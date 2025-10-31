@@ -15,13 +15,14 @@ export async function main(ns) {
 
   // const shareScript = 'shareRam.js';
   // const runShareScript = 'run_share.js';
-  
+
   let owned = ns.getPurchasedServers();
   for (let s of owned) {
     if (killShare) {
       ns.kill(C.ScriptShare, s);
       continue;
     }
+    if (s == 'SRV-001') continue;
     ns.scp([C.ScriptShare, C.ScriptRunShare], s, 'home');
     await ns.sleep(500);
     ns.exec(C.ScriptRunShare, s, 1);

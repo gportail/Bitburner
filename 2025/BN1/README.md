@@ -19,3 +19,4 @@
 ### Nombre de thread optimum
 
 C'est le nombre de thread du script de H/G/W permettant d'être toujours au dessus de 75% du max d'argent et à +10% du minimum de niveau de sécurité.
+

@@ -14,6 +14,7 @@ export async function main(ns) {
   ns.tprint(info.currentNode);
   ns.tprint(info.ownedSF.get(4));
   ns.tprint(info.ownedSF.get(1));
+  ns.tprint(info.ownedSF.get(2));
 
 
 

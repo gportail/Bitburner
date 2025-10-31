@@ -291,6 +291,8 @@ export async function main(ns) {
 
   while (true) {
 
+    //ns.run(C.ScriptRunShare, 1, '-k');
+    //ns.run(C.ScriptRunShareOnOwned, 1, '-k');
     if (loopNb % 4 == 0) {
       log(ns, "Scan des serveurs présents", quiet);
       serveurs = DS.deepscan(ns, 'home');
@@ -374,6 +376,8 @@ export async function main(ns) {
       logf(ns, `${cl.red}****************************************`, [], false);
     }
 
+    // ns.run(C.ScriptRunShare);
+    // ns.run(C.ScriptRunShareOnOwned);
     if (oneRun) break; // pour debug
     await ns.sleep(waitTimer);
 

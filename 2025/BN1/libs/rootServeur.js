@@ -145,6 +145,6 @@ export async function backdoorServer(ns, target) {
     await ns.singularity.installBackdoor();
     moveTo(ns, 'home');
   } else {
-    logf(ns, `${cl.error}Impossible de se connecter à %s`, [target], false);
+    logf(ns, `${cl.error}Impossible de se connecter à %s`, [target], false);z
   }
 }
